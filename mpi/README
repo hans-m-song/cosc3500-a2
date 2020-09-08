@@ -1,0 +1,17 @@
+Setup for Goliath:
+
+ssh user@goliath.compute.eait.uq.edu.au
+module load gcc mpi/openmpi-x86_64
+
+Setup for Getafix:
+
+ssh user@getafix.smp.uq.edu.au -p 2022
+module load gnu/7.2.0 gnutools mpi/openmpi3_eth
+
+#git clone git://git.science.uq.edu.au/cosc3500
+cd cosc3500
+git pull
+cd mpi
+make example1
+mpiexec -n 4 ./example1
+

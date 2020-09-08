@@ -1,6 +1,6 @@
 
-CXX=mpic++
-CXXFLAGS=-g2
+MPICXX?=mpic++
+CXXFLAGS?=-g2
 
 MAKEDEPEND = $(CXX) -MM -MT $@ $(CXXFLAGS) -o $*.Td $<
 
@@ -15,11 +15,11 @@ MAKEDEPEND_INFO = $(MAKEDEPEND); \
 
 % : %.cpp
 	@$(MAKEDEPEND_INFO)
-	$(CXX) $(CXXFLAGS) $(CXXFLAGS_$@) $(LDFLAGS) $(sort $(patsubst ./%,%, $(filter %.o %.cpp, $^))) $(LIBS_$@) $(LIB) -o $@
+	$(MPICXX) $(CXXFLAGS) $(CXXFLAGS_$@) $(LDFLAGS) $(sort $(patsubst ./%,%, $(filter %.o %.cpp, $^))) $(LIBS_$@) $(LIB) -o $@
 
 %.o : %.cpp %.d
 	@$(MAKEDEPEND_INFO)
-	$(CXX) $(CXXFLAGS) $(CXXFLAGS_$@) -c $< -o $@
+	$(MPICXX) $(CXXFLAGS) $(CXXFLAGS_$@) -c $< -o $@
 
 %.d :
 	\
