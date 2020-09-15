@@ -2,6 +2,7 @@ CXX?=g++
 CXXFLAGS?=-g2
 
 NVCC?=nvcc
+NVFLAGS?=-g --gpu-architecture=sm_35 -Wno-deprecated-gpu-targets
 
 MAKEDEPEND = $(CXX) -MM -MT $@ $(CXXFLAGS) -o $*.Td $<
 
@@ -26,11 +27,11 @@ MAKEDEPENDCUDA_INFO = $(MAKEDEPENDCUDA); \
 
 % : %.cu
 	@$(MAKEDEPENDCUDA_INFO)
-	$(NVCC) $(NVCCFLAGS) $(NVFLAGS_$@) $(LDFLAGS) $(sort $(patsubst ./%,%, $(filter %.o %.cu, $^))) $(LIBS_$@) $(LIB) -o $@
+	$(NVCC) $(NVFLAGS) $(NVFLAGS_$@) $(LDFLAGS) $(sort $(patsubst ./%,%, $(filter %.o %.cu, $^))) $(LIBS_$@) $(LIB) -o $@
 
 %.o : %.cu %.d
 	@$(MAKEDEPENDCUDA_INFO)
-	(NVCC) $(NVCCFLAGS) $(NVFLAGS_$@) -c $< -o $@
+	(NVCC) $(NVFLAGS) $(NVFLAGS_$@) -c $< -o $@
 
 % : %.cpp
 	@$(MAKEDEPEND_INFO)

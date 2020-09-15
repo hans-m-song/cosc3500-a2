@@ -49,9 +49,12 @@ int main()
    checkError(cudaMemcpy(xDevice, x, N*sizeof(double), cudaMemcpyHostToDevice));
    checkError(cudaMemcpy(yDevice, y, N*sizeof(double), cudaMemcpyHostToDevice));
 
+   int Threads = 256;
+   int Blocks = 1; //(N+Threads-1)/Threads;
+
    auto t1 = std::chrono::high_resolution_clock::now();
 
-   add<<<1, 256>>>(N, xDevice, yDevice);
+   add<<<Blocks, Threads>>>(N, xDevice, yDevice);
    checkError(cudaDeviceSynchronize());
 
    auto t2 = std::chrono::high_resolution_clock::now();

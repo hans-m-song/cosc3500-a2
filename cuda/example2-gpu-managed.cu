@@ -28,9 +28,12 @@ int main()
 {
    int N = 1<<20; // pow(2,20) = 1,048,576
 
-   // allocate memory on the host
-   double* x = new double[N];
-   double* y = new double[N];
+   // allocate memory
+   double* x;
+   checkError(cudaMallocManaged(&x, N*sizeof(double)));
+
+   double* y;
+   checkError(cudaMallocManaged(&y, N*sizeof(double)));
 
    // initialize arrays
    for (int i = 0; i < N; i++)
@@ -39,25 +42,15 @@ int main()
       y[i] = 2.0;
    }
 
-   // allocate memory on the device
-   double* xDevice;
-   double* yDevice;
-   checkError(cudaMalloc(&xDevice, N*sizeof(double)));
-   checkError(cudaMalloc(&yDevice, N*sizeof(double)));
-
-   // copy memory from host to device
-   checkError(cudaMemcpy(xDevice, x, N*sizeof(double), cudaMemcpyHostToDevice));
-   checkError(cudaMemcpy(yDevice, y, N*sizeof(double), cudaMemcpyHostToDevice));
+   int Threads = 256;
+   int Blocks = (N+Threads-1)/Threads;
 
    auto t1 = std::chrono::high_resolution_clock::now();
 
-   add<<<1, 256>>>(N, xDevice, yDevice);
+   add<<<Blocks, Threads>>>(N, x, y);
    checkError(cudaDeviceSynchronize());
 
    auto t2 = std::chrono::high_resolution_clock::now();
-
-   // copy memory from device back to host
-   checkError(cudaMemcpy(x, xDevice, N*sizeof(double), cudaMemcpyDeviceToHost));
 
    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2-t1).count();
 
