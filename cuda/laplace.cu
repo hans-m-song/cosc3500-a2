@@ -76,9 +76,6 @@ int main()
    float* T1_device;
    float* T2_device;
 
-    // allocate a "pre-computation" T array on the host
-    float *T = new float [NX*NY];
-
     // initialize array on the host
     Initialize(T);
 
@@ -106,7 +103,7 @@ int main()
 
     // copy final array to the CPU from the GPU
     checkError(cudaMemcpy(T, T2_device, NX*NY*sizeof(float),cudaMemcpyDeviceToHost));
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
 
     // print the results to a file
     std::ofstream Out("temperature.dat");
@@ -115,7 +112,7 @@ int main()
        for (int x = 0; x < NX; ++x)
        {
           int index = y*NX + x;
-          Out << T[index] << ' ';
+          Out << x << ' ' << y << ' ' << T[index] << '\n';
        }
        Out << '\n';
     }

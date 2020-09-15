@@ -16,8 +16,8 @@ void checkError(cudaError_t e)
 __global__
 void add(int n, double* x, double const* y)
 {
-   int index = threadIdx.x;
-   int stride = blockDim.x;
+   int index = blockIdx.x*blockDim.x + threadIdx.x;
+   int stride = blockDim.x*gridDim.x;
    for (int i = index; i < n; i += stride)
    {
       x[i] = x[i] + y[i];
@@ -50,7 +50,7 @@ int main()
    checkError(cudaMemcpy(yDevice, y, N*sizeof(double), cudaMemcpyHostToDevice));
 
    int Threads = 256;
-   int Blocks = 1; //(N+Threads-1)/Threads;
+   int Blocks = (N+Threads-1)/Threads;
 
    auto t1 = std::chrono::high_resolution_clock::now();
 

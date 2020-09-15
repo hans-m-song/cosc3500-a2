@@ -51,7 +51,7 @@ int main()
 
    auto t1 = std::chrono::high_resolution_clock::now();
 
-   add<<<1, 256>>>(N, xDevice, yDevice);
+   add<<<1, 1>>>(N, xDevice, yDevice);
    checkError(cudaDeviceSynchronize());
 
    auto t2 = std::chrono::high_resolution_clock::now();
