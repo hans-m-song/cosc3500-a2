@@ -2,8 +2,8 @@
 // Assignment 2
 // Header file for the random number utilities
 
-#if !defined(COSC2500_RANDUTIL_H)
-#define COSC2500_RANDUTIL_H
+#if !defined(COSC3500_RANDUTIL_H)
+#define COSC3500_RANDUTIL_H
 
 #include <vector>
 #include <random>

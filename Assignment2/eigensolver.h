@@ -5,8 +5,8 @@
 // the eigenvalues_arpack function.
 // Requires linking against libarpack
 
-#if !defined(COSC2500_EIGENSOLVER_H)
-#define COSC2500_EIGENSOLVER_H
+#if !defined(COSC3500_EIGENSOLVER_H)
+#define COSC3500_EIGENSOLVER_H
 
 #include <chrono>
 #include <vector>
