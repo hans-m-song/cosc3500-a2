@@ -76,7 +76,7 @@ int main(int argc, char** argv)
    std::cout << "   And the eigensolver library used:    " << std::setw(12) << (Info.TimeInEigensolver - Info.TimeInMultiply).count() << " us\n";
    std::cout << "Total serial (initialization + solver): " << std::setw(12) << (TotalTime - Info.TimeInMultiply).count() << " us\n";
    std::cout << "Number of matrix-vector multiplies:     " << std::setw(12) << Info.NumMultiplies << '\n';
-   std::cout << "Time per matrix-vector multiplication:  " << std::setw(12) << (Info.TimeInEigensolver / Info.NumMultiplies).count() << " us\n";
+   std::cout << "Time per matrix-vector multiplication:  " << std::setw(12) << (Info.TimeInMultiply / Info.NumMultiplies).count() << " us\n";
 
    // free memory
    free(M);
