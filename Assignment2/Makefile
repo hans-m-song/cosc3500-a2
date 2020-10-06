@@ -1,8 +1,8 @@
 
 CXX?=g++
-CXXFLAGS?=-g2
+CXXFLAGS?=-O2
 NVCC?=nvcc
-NVFLAGS?=-g --gpu-architecture=sm_35 -Wno-deprecated-gpu-targets
+NVFLAGS?=-O2 --gpu-architecture=sm_35 -Wno-deprecated-gpu-targets
 MPICXX?=mpic++
 
 MAKEDEPEND = $(CXX) -MM -MT $@ $(CXXFLAGS) -o $*.Td $<
