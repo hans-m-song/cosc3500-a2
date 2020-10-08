@@ -9,21 +9,34 @@
 #include <iomanip>
 
 // global variables to store the matrix
-
 double* M = nullptr;
-double** d_M;
+double* d_M;
 int N = 0;
-int* d_N = 0;
+
+void checkError(cudaError_t e)
+{
+   if (e != cudaSuccess)
+   {
+      std::cerr << "CUDA error: " << int(e) << ": " 
+                << cudaGetErrorString(e) << "\n";
+      abort();
+   }
+}
 
 __global__
-void job(double* Y, const double* X, int* N)
+void job(double* Y, double* X, double* M, int N)
 {
-   for (int i = 0; i < *N; ++i)
+   int x = blockIdx.x * blockDim.x + threadIdx.x;
+   int y = blockIdx.y * blockDim.y + threadIdx.y;
+   int x_stride = blockDim.x * gridDim.x;
+   int y_stride = blockDim.y * gridDim.y;
+
+   for (int i = x; i < N; i += x_stride)
    {
       Y[i] = 0;
-      for (int j = 0; j < *N; ++j)
+      for (int j = y; j < N; j += y_stride)
       {
-         Y[i] += d_M[i*(*N)+j] * X[j];
+         Y[i] += M[i*N+j] * X[j];
       }
    }
 }
@@ -31,13 +44,30 @@ void job(double* Y, const double* X, int* N)
 // implementation of the matrix-vector multiply function
 void MatrixVectorMultiply(double* Y, const double* X)
 {
-   double *d_Y;
-   const double *d_X;
-   cudaMalloc((void**)&d_Y, sizeof(double));
-   cudaMalloc((void**)&d_X, sizeof(double));
-   cudaMemcpy((void*)d_Y, Y, sizeof(double), cudaMemcpyHostToDevice);
-   cudaMemcpy((void*)d_X, X, sizeof(double), cudaMemcpyHostToDevice);
-   job<<<1,1>>>(d_Y, d_X, d_N);
+   double *d_Y, *d_X;
+   int size = N * sizeof(double);
+   int block_size=32;
+   int grid_size=((N + block_size - 1) / block_size);
+
+   checkError(cudaMalloc((void**)&d_Y, size));
+   checkError(cudaMalloc((void**)&d_X, size));
+
+   cudaMemcpy(d_Y, Y, size, cudaMemcpyHostToDevice);
+   cudaMemcpy(d_X, X, size, cudaMemcpyHostToDevice);
+
+   job<<<grid_size, block_size>>>(d_Y, d_X, d_M, N);
+
+   checkError(cudaDeviceSynchronize());
+
+   checkError(cudaMemcpy((void*)Y, d_Y, size, cudaMemcpyDeviceToHost));
+   checkError(cudaMemcpy((void*)X, d_X, size, cudaMemcpyDeviceToHost));
+
+   // for (int i = 0; i < N; i++)
+   // {
+   //    std::cout << i << " : " << Y[i] << "\n";
+   // }
+   cudaFree(d_Y);
+   cudaFree(d_X);
 }
 
 int main(int argc, char** argv)
@@ -52,11 +82,11 @@ int main(int argc, char** argv)
       return 1;
    }
    N = std::stoi(argv[1]);
-   cudaMalloc((void**)&d_N, sizeof(int));
    
    // Allocate memory for the matrix
-   cudaMalloc(&d_M, N*N*sizeof(double));
-   cudaMemcpy((void*)d_N, &N, sizeof(int), cudaMemcpyHostToDevice);
+   int size = N * N * sizeof(double);
+   M = static_cast<double*>(malloc(size));
+   checkError(cudaMalloc(&d_M, size));
 
    // seed the random number generator to a known state
    randutil::seed(4);  // The standard random number.  https://xkcd.com/221/
@@ -67,12 +97,14 @@ int main(int argc, char** argv)
    // The off-diagonal entries are gaussian distributed with variance 1.
    for (int i = 0; i < N; ++i)
    {
-      d_M[i*N] = std::sqrt(2.0) * randutil::randn();
+      M[i*N] = std::sqrt(2.0) * randutil::randn();
       for (int j = i+1; j < N; ++j)
       {
-         d_M[i*N + j] = d_M[j*N + i] = randutil::randn();
+         M[i*N + j] = M[j*N + i] = randutil::randn();
       }
    }
+   checkError(cudaMemcpy(d_M, M, size, cudaMemcpyHostToDevice));
+
    auto FinishInitialization = std::chrono::high_resolution_clock::now();
 
    // Call the eigensolver
@@ -95,5 +127,6 @@ int main(int argc, char** argv)
    std::cout << "Time per matrix-vector multiplication:  " << std::setw(12) << (Info.TimeInMultiply / Info.NumMultiplies).count() << " us\n";
 
    // free memory
-   cudaFree(M);
+   free(M);
+   cudaFree(d_M);
 }
