@@ -31,13 +31,15 @@ void job(double* Y, double* X, double* M, int N)
    int x_stride = blockDim.x * gridDim.x;
    int y_stride = blockDim.y * gridDim.y;
 
+   int y;
    for (int i = x; i < N; i += x_stride)
    {
-      Y[i] = 0;
+      y = 0;
       for (int j = y; j < N; j += y_stride)
       {
-         Y[i] += M[i*N+j] * X[j];
+         y += M[i*N+j] * X[j];
       }
+      Y[i] = y;
    }
 }
 
@@ -57,15 +59,11 @@ void MatrixVectorMultiply(double* Y, const double* X)
 
    job<<<grid_size, block_size>>>(d_Y, d_X, d_M, N);
 
-   checkError(cudaDeviceSynchronize());
+   //checkError(cudaDeviceSynchronize());
 
    checkError(cudaMemcpy((void*)Y, d_Y, size, cudaMemcpyDeviceToHost));
    checkError(cudaMemcpy((void*)X, d_X, size, cudaMemcpyDeviceToHost));
 
-   // for (int i = 0; i < N; i++)
-   // {
-   //    std::cout << i << " : " << Y[i] << "\n";
-   // }
    cudaFree(d_Y);
    cudaFree(d_X);
 }
