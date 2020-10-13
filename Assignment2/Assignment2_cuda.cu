@@ -31,15 +31,13 @@ void job(double* Y, double* X, double* M, int N)
    int x_stride = blockDim.x * gridDim.x;
    int y_stride = blockDim.y * gridDim.y;
 
-   int y;
    for (int i = x; i < N; i += x_stride)
    {
-      y = 0;
+      Y[i] = 0;
       for (int j = y; j < N; j += y_stride)
       {
-         y += M[i*N+j] * X[j];
+         Y[i] += M[i*N+j] * X[j];
       }
-      Y[i] = y;
    }
 }
 
@@ -95,7 +93,7 @@ int main(int argc, char** argv)
    // The off-diagonal entries are gaussian distributed with variance 1.
    for (int i = 0; i < N; ++i)
    {
-      M[i*N] = std::sqrt(2.0) * randutil::randn();
+      M[i*N+i] = std::sqrt(2.0) * randutil::randn();
       for (int j = i+1; j < N; ++j)
       {
          M[i*N + j] = M[j*N + i] = randutil::randn();

@@ -59,7 +59,7 @@ void MatrixVectorMultiply(double* Y, const double* X)
 void allocate_M()
 {
    // Allocate memory for the matrix
-   M = static_cast<double*>(calloc(N*N, N*N*sizeof(double)));
+   M = static_cast<double*>(malloc(N*N*sizeof(double)));
 
    // seed the random number generator to a known state
    randutil::seed(4);  // The standard random number.  https://xkcd.com/221/
@@ -70,7 +70,7 @@ void allocate_M()
    // The off-diagonal entries are gaussian distributed with variance 1.
    for (int i = 0; i < N; ++i)
    {
-      M[i*N] = std::sqrt(2.0) * randutil::randn();
+      M[i*N + i] = std::sqrt(2.0) * randutil::randn();
       for (int j = i+1; j < N; ++j)
       {
          M[i*N + j] = M[j*N + i] = randutil::randn();
@@ -81,9 +81,9 @@ void allocate_M()
 void allocate_M_part()
 {
    int sum = 0;
-   sendcounts = static_cast<int*>(malloc(N*sizeof(int)));
-   displs = static_cast<int*>(malloc(N*sizeof(int)));
-   for (int i = 0; i < N; i++)
+   sendcounts = static_cast<int*>(malloc(worker_count*sizeof(int)));
+   displs = static_cast<int*>(malloc(worker_count*sizeof(int)));
+   for (int i = 0; i < worker_count; i++)
    {
       sendcounts[i] = count;
       if (leftover > 0)
