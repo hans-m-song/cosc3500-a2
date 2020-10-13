@@ -82,6 +82,7 @@ int main(int argc, char** argv)
       << "," << (TotalTime - Info.TimeInMultiply).count()
       << "," << Info.NumMultiplies
       << "," << (Info.TimeInMultiply / Info.NumMultiplies).count()
+      << "\n";
 
    // free memory
    free(M);
