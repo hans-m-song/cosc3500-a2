@@ -55,7 +55,7 @@ int main(int argc, char** argv)
    // The off-diagonal entries are gaussian distributed with variance 1.
    for (int i = 0; i < N; ++i)
    {
-      M[i*N] = std::sqrt(2.0) * randutil::randn();
+      M[i*N+i] = std::sqrt(2.0) * randutil::randn();
       for (int j = i+1; j < N; ++j)
       {
          M[i*N + j] = M[j*N + i] = randutil::randn();
