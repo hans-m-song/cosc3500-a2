@@ -67,16 +67,17 @@ int main(int argc, char** argv)
    auto InitializationTime = std::chrono::duration_cast<std::chrono::microseconds>(FinishInitialization - StartTime);
    auto TotalTime = std::chrono::duration_cast<std::chrono::microseconds>(FinishTime - StartTime);
 
-   std::cout << "Obtained " << Info.Eigenvalues.size() << " eigenvalues.\n";
-   std::cout << "The largest eigenvalue is: " << std::setw(16) << std::setprecision(12) << Info.Eigenvalues.back() << '\n';
-   std::cout << "Total time:                             " << std::setw(12) << TotalTime.count() << " us\n";
-   std::cout << "Time spent in initialization:           " << std::setw(12) << InitializationTime.count() << " us\n";
-   std::cout << "Time spent in eigensolver:              " << std::setw(12) << Info.TimeInEigensolver.count() << " us\n";
-   std::cout << "   Of which the multiply function used: " << std::setw(12) << Info.TimeInMultiply.count() << " us\n";
-   std::cout << "   And the eigensolver library used:    " << std::setw(12) << (Info.TimeInEigensolver - Info.TimeInMultiply).count() << " us\n";
-   std::cout << "Total serial (initialization + solver): " << std::setw(12) << (TotalTime - Info.TimeInMultiply).count() << " us\n";
-   std::cout << "Number of matrix-vector multiplies:     " << std::setw(12) << Info.NumMultiplies << '\n';
-   std::cout << "Time per matrix-vector multiplication:  " << std::setw(12) << (Info.TimeInMultiply / Info.NumMultiplies).count() << " us\n";
+   std::cout << "serial"
+      << "," << Info.Eigenvalues.size()
+      << "," << Info.Eigenvalues.back()
+      << "," << TotalTime.count()
+      << "," << InitializationTime.count()
+      << "," << Info.TimeInEigensolver.count()
+      << "," << Info.TimeInMultiply.count()
+      << "," << (Info.TimeInEigensolver - Info.TimeInMultiply).count()
+      << "," << (TotalTime - Info.TimeInMultiply).count()
+      << "," << Info.NumMultiplies
+      << "," << (Info.TimeInMultiply / Info.NumMultiplies).count()
 
    // free memory
    free(M);
