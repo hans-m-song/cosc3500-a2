@@ -68,6 +68,7 @@ int main(int argc, char** argv)
    auto TotalTime = std::chrono::duration_cast<std::chrono::microseconds>(FinishTime - StartTime);
 
    std::cout << "serial"
+      << "," << N
       << "," << Info.Eigenvalues.size()
       << "," << Info.Eigenvalues.back()
       << "," << TotalTime.count()

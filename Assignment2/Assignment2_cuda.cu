@@ -111,7 +111,8 @@ int main(int argc, char** argv)
    auto InitializationTime = std::chrono::duration_cast<std::chrono::microseconds>(FinishInitialization - StartTime);
    auto TotalTime = std::chrono::duration_cast<std::chrono::microseconds>(FinishTime - StartTime);
 
-   std::cout << "cuda"
+   std::cout << "cuda" 
+      << "," << N
       << "," << Info.Eigenvalues.size()
       << "," << Info.Eigenvalues.back()
       << "," << TotalTime.count()
