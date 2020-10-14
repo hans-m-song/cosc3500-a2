@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH --job-name=a2-cuda-test
+#SBATCH --array=1-5
+#SBATCH --partition=gpu
+#SBATCH --mem=32G
+#SBATCH --gres=gpu:1
+
+module load gnu/7.2.0 gnutools cuda
+
+N=(10 50 100 500 1000 5000 10000)
+
+for n in ${N[@]}; do
+  ./Assignment2_cuda $n
+done
+

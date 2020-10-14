@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --job-name=a2-serial-test
+#SBATCH --array=1-5
+#SBATCH --partition=cosc
+#SBATCH --mem-per-cpu=1G
+
+
+./Assignment2_serial 10
+./Assignment2_serial 50
+./Assignment2_serial 100
+./Assignment2_serial 500
+./Assignment2_serial 1000
+./Assignment2_serial 5000
+./Assignment2_serial 10000
