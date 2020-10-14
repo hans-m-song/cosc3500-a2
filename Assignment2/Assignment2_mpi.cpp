@@ -133,9 +133,11 @@ int main(int argc, char** argv)
    leftover = total_jobs % worker_count;
 
    if (id == 0) allocate_M();
-   allocate_M_part();
 
    auto FinishInitialization = std::chrono::high_resolution_clock::now();
+
+   allocate_M_part();
+
 
    if (id != 0)
    {
